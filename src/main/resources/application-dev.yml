@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: macrotrack-api
+  datasource:
+    url: jdbc:postgresql://localhost:5432/macrotrack_db
+    username: macrotrack_user
+    password: macrotrack_pass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=1h
+
+server:
+  port: 8080

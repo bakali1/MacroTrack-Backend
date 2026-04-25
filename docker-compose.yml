@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: ${POSTGRES_IMAGE:-postgres:16-alpine}
+    container_name: ${POSTGRES_CONTAINER_NAME:-macrotrack-api-postgres}
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-macrotrack_db}
+      POSTGRES_USER: ${POSTGRES_USER:-macrotrack_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-macrotrack_pass}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - macrotrack_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U macrotrack_user -d macrotrack_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    networks:
+      - macrotrack_network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${API_CONTAINER_NAME:-macrotrack-api}
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-macrotrack_db}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-macrotrack_user}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-macrotrack_pass}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_CACHE_TYPE: caffeine
+    ports:
+      - "${API_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - macrotrack_network
+
+volumes:
+  macrotrack_postgres_data:
+
+networks:
+  macrotrack_network:
+    driver: bridge
