@@ -18,4 +18,4 @@ spring:
       spec: maximumSize=1000,expireAfterWrite=1h
 
 server:
-  port: 8080
+  port: 4444

@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-macrotrack_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-macrotrack_pass}
     ports:
-      - "${POSTGRES_PORT:-23005}:23005"
+      - "${POSTGRES_PORT:-23006}:5432"
     volumes:
       - macrotrack_postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -32,7 +32,7 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_CACHE_TYPE: caffeine
     ports:
-      - "${API_PORT:-8080}:8080"
+      - "${API_PORT:-4444}:4444"
     depends_on:
       postgres:
         condition: service_healthy
