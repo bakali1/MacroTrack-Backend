@@ -10,22 +10,32 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "meal_entries")
+public class MealEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(unique = true, nullable = false)
-    private String email;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(nullable = false)
-    private String password;
+    private String date;
 
-    private String name;
+    @Column(name = "meal_type", nullable = false)
+    private String mealType;
 
-    @Column(name = "daily_calorie_goal")
-    private Integer dailyCalorieGoal = 2000;
+    @Column(name = "food_name", nullable = false)
+    private String foodName;
+
+    private Integer calories;
+
+    private Double carbs;
+
+    private Double protein;
+
+    private Double fat;
 
     @CreationTimestamp
     @Column(name = "created_at")
