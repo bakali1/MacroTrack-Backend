@@ -37,7 +37,7 @@ public class OpenFoodFactsService {
     public Mono<String> searchProducts(String query) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/api/v2/search")
+                        .path("/cgi/search")
                         .queryParam("search_terms", query)
                         .queryParam("page_size", 10)
                         .build())
