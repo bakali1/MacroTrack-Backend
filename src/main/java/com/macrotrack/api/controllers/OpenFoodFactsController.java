@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.macrotrack.api.entity.Product;
 import com.macrotrack.api.services.OpenFoodFactsService;
 
-import reactor.core.publisher.Mono;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,18 +24,18 @@ public class OpenFoodFactsController {
     }
 
     @GetMapping("/product/{barcode}")
-    public Mono<String> getProduct(@PathVariable String barcode) {
+    public String getProduct(@PathVariable String barcode) {
         return openFoodFactsService.getProductByBarcode(barcode);
     }
 
     @GetMapping("/product/{barcode}/details")
-    public Mono<Product> getProductDetails(@PathVariable String barcode) {
-        return openFoodFactsService.getProductByBarcode(barcode)
-                .map(json -> transformToProduct(json, barcode));
+    public Product getProductDetails(@PathVariable String barcode) {
+        String json = openFoodFactsService.getProductByBarcode(barcode);
+        return transformToProduct(json, barcode);
     }
 
     @GetMapping("/search")
-    public Mono<String> searchProducts(@RequestParam String q) {
+    public String searchProducts(@RequestParam String q) {
         return openFoodFactsService.searchProducts(q);
     }
 
@@ -49,7 +48,7 @@ public class OpenFoodFactsController {
                 return product;
             }
             product.setId(getTextValue(productNode, "_id"));
-            product.setName(getTextValue(productNode, "name_fr"));
+            product.setName(getTextValue(productNode, "product_name", "product_name"));
             product.setServing_size(getTextValue(productNode, "serving_size"));
             product.setServing_cal(getTextValue(productNode, "energy-kcal_serving"));
             product.setServing_carbs(getTextValue(productNode, "carbohydrates-total_serving"));

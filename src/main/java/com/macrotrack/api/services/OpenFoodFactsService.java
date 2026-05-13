@@ -5,7 +5,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 @Service
 public class OpenFoodFactsService {
@@ -21,27 +20,32 @@ public class OpenFoodFactsService {
                 .baseUrl(BASE_URL)
                 .defaultHeader(HttpHeaders.USER_AGENT, "MySpringApp/1.0 (myapp@example.com)")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(10 * 1024 * 1024))
                 .build();
     }
 
     // GET product by barcode (read operation - no auth needed)
     @Cacheable(value = "products", key = "#barcode")
-    public Mono<String> getProductByBarcode(String barcode) {
+    public String getProductByBarcode(String barcode) {
         return webClient.get()
                 .uri("/api/v2/product/{barcode}.json", barcode)
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(String.class)
+                .block();
     }
 
     // Search products (limited to 10 req/min!)
-    public Mono<String> searchProducts(String query) {
+    public String searchProducts(String query) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/cgi/search")
+                        .path("/cgi/search.pl")
                         .queryParam("search_terms", query)
                         .queryParam("page_size", 10)
+                        .queryParam("json", 1)
+                        .queryParam("action", "process")
                         .build())
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(String.class)
+                .block();
     }
 }
