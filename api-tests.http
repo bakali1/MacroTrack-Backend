@@ -1,0 +1,73 @@
+### Variables
+@baseUrl = http://localhost:8080/api
+@token = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZTM4ZTIwYS00MDJiLTRmYzgtYTAzNC1jYjJkMjIxMmZhN2EiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3Nzg2NzU1MjMsImV4cCI6MTc3ODc2MTkyM30.9XAUs-4UhfLUrxRwx0nJGwVf-ZIxPk533456EFxAmR4izLI7q49549xoBsrvzT5z
+
+### 1. Health check
+GET {{baseUrl}}/health
+
+### 2. Sign up a new user
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+
+{
+    "username": "testuser",
+    "email": "test@example.com",
+    "password": "password123",
+    "dailyCalorieGoal": 2000
+}
+
+### 3. Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "test@example.com",
+    "password": "password123"
+}
+
+### 4. Search food from OpenFoodFacts
+GET {{baseUrl}}/food/search?q=chicken
+Authorization: Bearer {{token}}
+
+### 5. Add a meal entry (returns the new entry ID)
+POST {{baseUrl}}/meals
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "date": "2026-05-13",
+    "mealType": "Breakfast",
+    "foodName": "Oatmeal",
+    "calories": 350,
+    "carbs": 55.0,
+    "protein": 12.0,
+    "fat": 6.0
+}
+
+### 6. Add another meal entry for testing deletion
+POST {{baseUrl}}/meals
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "date": "2026-05-13",
+    "mealType": "Lunch",
+    "foodName": "Chicken Salad",
+    "calories": 450,
+    "carbs": 20.0,
+    "protein": 35.0,
+    "fat": 25.0
+}
+
+### 7. Get daily summary (check the "id" field on each item)
+GET {{baseUrl}}/meals/daily?date=2026-05-13
+Authorization: Bearer {{token}}
+
+### 8. Delete a meal entry (replace with actual UUID from response above)
+DELETE {{baseUrl}}/meals/REPLACE_WITH_ACTUAL_ID
+Authorization: Bearer {{token}}
+
+### 9. Try deleting with a fake/non-existent ID to see the bug
+DELETE {{baseUrl}}/meals/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{token}}

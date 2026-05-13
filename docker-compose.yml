@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-macrotrack_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-macrotrack_pass}
     ports:
-      - "${POSTGRES_PORT:-23005}:23005"
+      - "${POSTGRES_PORT:-4443}:4443"
     volumes:
       - macrotrack_postgres_data:/var/lib/postgresql/data
     healthcheck:

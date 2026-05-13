@@ -1,5 +1,6 @@
 package com.macrotrack.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import java.util.List;
 
@@ -19,10 +20,22 @@ public class DailySummaryResponse {
         private int calories;
         private List<FoodItem> items;
 
-        @Data
         public static class FoodItem {
+            private String itemId;
             private String name;
             private int calories;
+
+            public FoodItem() {}
+
+            @JsonProperty("id")
+            public String getItemId() { return itemId; }
+            public void setItemId(String itemId) { this.itemId = itemId; }
+
+            public String getName() { return name; }
+            public void setName(String name) { this.name = name; }
+
+            public int getCalories() { return calories; }
+            public void setCalories(int calories) { this.calories = calories; }
         }
     }
 }

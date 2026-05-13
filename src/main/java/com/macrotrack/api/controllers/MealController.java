@@ -65,11 +65,17 @@ public class MealController {
         User user = userRepository.findById(UUID.fromString(auth.getName())).orElse(null);
         if (user == null) return ResponseEntity.status(401).build();
 
-        mealEntryRepository.findById(id).ifPresent(entry -> {
-            if (entry.getUser().getId().equals(user.getId())) {
-                mealEntryRepository.delete(entry);
-            }
-        });
+        var optional = mealEntryRepository.findById(id);
+        if (optional.isEmpty()) {
+            return ResponseEntity.status(404).body(Map.of("error", "Entry not found"));
+        }
+
+        MealEntry entry = optional.get();
+        if (!entry.getUser().getId().equals(user.getId())) {
+            return ResponseEntity.status(403).body(Map.of("error", "Not authorized"));
+        }
+
+        mealEntryRepository.delete(entry);
         return ResponseEntity.ok(Map.of("success", true));
     }
 
@@ -94,6 +100,7 @@ public class MealController {
                 if (entry.getMealType().equalsIgnoreCase(mealType)) {
                     DailySummaryResponse.MealGroup.FoodItem item =
                         new DailySummaryResponse.MealGroup.FoodItem();
+                    item.setItemId(entry.getId().toString());
                     item.setName(entry.getFoodName());
                     item.setCalories(entry.getCalories() != null ? entry.getCalories() : 0);
                     items.add(item);
